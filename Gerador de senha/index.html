@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="reset.css">
+    <title>Gerador de senha</title>
+</head>
+<body>
+<main> 
+<section class="hero">
+    <h1 class="title"> GERADOR DE SENHA </h1>
+
+    <p class="subtitle">  Utilize o gerador de senha pra criar uma senha forte e segura. </p>
+</section>
+
+<section class="box"> 
+    <div class="password"> 
+        
+        <div class="text">
+            <input type="text" name="password" id="password">
+        </div>
+        
+        <div class="actions">
+            <button id="copy-1"> 
+                <img src="copy.svg" width="42">
+            </button>
+            
+            <button id="renew">
+                <img src="renew.svg" width="42">
+            </button>
+        </div>
+
+    </div>
+    <div class="security-indicator"> 
+        <div id ="security-indicator-bar" class="bar safe"></div>
+    </div> 
+    <div id="security-message"></div>
+</section>
+
+<section class="customize">
+    <h3 class = "title"> PERSONALIZAR </h3>
+        <div class="actions"> 
+             <div class="password-length"> 
+                <p> Tamanho: <span id = "password-length-text">16</span> </p>
+                <br>
+                <p>
+                    <input type="range" 
+                    name="password-lenght" 
+                    id="password-lenght" 
+                    class="slider"
+                    value="16" 
+                    min="4" 
+                    max="25"
+                    >
+                 </p>
+                 </div>    
+        <div class="config"> 
+            <label class="checkbox-container">
+                <span class="text"> Maiúsculas </span>
+                <input type="checkbox" id="uppercase-check" checked />
+                <span class="checkmark"></span>
+            </label>
+
+            <label class="checkbox-container">
+                <span class="text"> Números </span>
+                <input type = "checkbox" id="number-check" checked /> 
+                <span class="checkmark"></span>
+            </label>
+
+            <label class="checkbox-container"> 
+                <span class="text"> Símbolos </span>
+                <input type="checkbox" id="symbol-check" checked/>
+                <span class="checkmark"></span>
+            </label>
+        </div>
+        </div>
+    
+</section>
+
+<div class="submit"> 
+    <button id="copy-2"> Copiar senha </button>
+</div>
+
+
+</main>
+<script> 
+// Define o tamanho padrão da senha
+let passwordLength = 16
+
+// Seleciona o input onde a senha será exibida
+const inputE1 = document.querySelector("#password")
+
+// Seleciona os checkboxes de configuração entre outros
+const upperCaseCheckEl = document.querySelector("#uppercase-check")
+const numberCheckEl = document.querySelector("#number-check")
+const symbolCheckEl = document.querySelector("#symbol-check")
+const renewClick = document.querySelector("#renew") 
+const securityBarMode = document.querySelector("#security-indicator-bar")
+const securityMessage = document.querySelector("#security-message")
+
+
+// Função que gera a senha com base nas opções selecionadas ( COM BASE NOS BUTÕES )
+function generatePassword() {
+    // Começa com letras minúsculas, excluindo letras ambíguas como "i" e "l"
+    let chars = "abcdefghjkmnpqrstuvwxyz"
+
+    // Define os conjuntos adicionais de caracteres
+    const upperCaseChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+    const numberChars = "123456789"
+    const symbolChars = "?!@&*()[]"
+
+    // Se a opção de maiúsculas estiver marcada, adiciona ao conjunto de caracteres
+    if (upperCaseCheckEl.checked) {
+        chars += upperCaseChars
+    }
+
+    // Se a opção de números estiver marcada, adiciona ao conjunto de caracteres
+    if (numberCheckEl.checked) {
+        chars += numberChars
+    }
+
+    // Se a opção de símbolos estiver marcada, adiciona ao conjunto de caracteres
+    if (symbolCheckEl.checked) {
+        chars += symbolChars
+    }
+
+    // Inicializa a variável onde a senha será construída
+    let password = ""
+
+    // Gera a senha com o comprimento selecionado
+    for (let i = 0; i < passwordLength; i++) {
+        // pegando um número aletatório como índice 
+        // math.random() gera um número entre 0 e 1. 
+        // Gera um número aleatório entre 0 e o tamanho do conjunto de caracteres
+        // flor arredonda o número pra baixo
+        const randomNumber = Math.floor(Math.random() * chars.length)
+
+        // Adiciona o caractere aleatório à senha
+        password += chars[randomNumber]
+    }
+
+    // Exibe a senha gerada no input
+    inputE1.value = password
+
+    calculateStrengthPassword(password) 
+
+}
+
+// Função que copia a senha para a área de transferência
+function copy() {
+    //pega o valor do input da senha e copia para a área de transferência. 
+    navigator.clipboard.writeText(inputE1.value)
+}
+
+// ATUALIZAÇÃO DO BOTÃO SLIDER, E DO COMPRIMENTO 
+
+// Seleciona o input que define o comprimento da senha
+const passwordLengthE1 = document.querySelector("#password-lenght")
+
+// Atualiza o comprimento da senha quando o slider é movido
+
+// Função que gera a senha com base nas opções selecionadas ( COM BASE NO SLIDER )
+
+passwordLengthE1.addEventListener("input", function() {
+    // Atualiza a variável com o novo valor
+    passwordLength = passwordLengthE1.value
+
+    // Atualiza o texto que mostra o valor ao lado do slider
+    document.querySelector("#password-length-text").innerText = passwordLength
+
+    // Gera uma nova senha com o novo comprimento
+    generatePassword()
+})
+
+// Regenera a senha automaticamente ao ativar/desativar as opções
+upperCaseCheckEl.addEventListener("click", generatePassword)
+numberCheckEl.addEventListener("click", generatePassword)
+symbolCheckEl.addEventListener("click", generatePassword)
+
+// Botão de copiar ao lado do campo de senha
+document.querySelector("#copy-1").addEventListener("click", copy)
+
+// Botão de copiar na parte inferior da página
+document.querySelector("#copy-2").addEventListener("click", copy)
+
+// Botão de renew 
+renewClick.addEventListener("click", generatePassword)
+
+//Barra security - mudando cor da barra a partir da segurança da senha. pensar numa lógica melhor. 
+
+
+function calculateStrengthPassword (password) { 
+    let score = 0 
+
+    //pontuação por comprimento
+    if(password.length >= 8) {score++}
+    if(password.length >=12) {score++}
+    if(password.length >= 16){score++} 
+
+    //pontuação por diversidade
+    if (/[A-Z]/.test(password)) score++;        // Tem letra maiúscula?
+    if (/[0-9]/.test(password)) score++;        // Tem número?
+    if (/[\?\!\@\&\*\(\)\[\]]/.test(password)) score++; // Tem símbolo?
+
+    securityBarMode.classList.remove("safe", "warning", "critical", "awful")
+
+    if(score<=2){
+        securityBarMode.classList.add("awful")
+        securityMessage.innerText = "SENHA PÉSSIMA"
+    }
+    else if(score<=4){
+        securityBarMode.classList.add("critical")
+        securityMessage.innerText = "SENHA FRACA"
+    }
+    else if(score<=5){
+        securityBarMode.classList.add("warning")
+        securityMessage.innerText = "SENHA FORTE"
+    }
+    else{
+        securityBarMode.classList.add("safe")
+        securityMessage.innerText = "SENHA MUITO FORTE"
+    }
+}
+
+// Gera uma senha assim que a página é carregada
+generatePassword()
+
+calculateStrengthPassword(password) 
+
+
+</script>
+
+</body>
+</html>
+
